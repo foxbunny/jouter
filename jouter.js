@@ -1,28 +1,34 @@
-// This object holds the routes
-const ROUTES = {}
+const TOKEN_RE = /:[^\/]+/g
 
 // parseRoute :: String -> RegExp
-//
-// Parses a route definition in string format, and returns a regexp that
-// matches the definition.
-//
-// Route definitions look like this:
-//
-//    /:foo/:bar/:baz
-//
-// Each of the `foo`, `bar`, and `baz` are named route segments.
-//
-const parseRoute = x => {
+export const routeRe = x => new RegExp(`^${x.replace(TOKEN_RE, '([^/]+)')}$`)
 
+// route :: (* -> *), String -> Route -> (String -> _)
+export const route = (f, r) => {
+  const re = routeRe(r)
+  return path => {
+    const match = re.exec(path)
+    if (!match) return
+    f(...match.slice(1))
+  }
 }
 
+export const createRouter = () => {
+  const routes = []
 
-// Utility functions
-
-export function curry(f, currentArgs = []) {
-  return function (...args) {
-    const allArgs = currentArgs.concat(args)
-    if (args.length + currentArgs.length >= f.length) return f(...allArgs)
-    return curry(f, allArgs)
+  const add = (f, r) => routes.push(route(f, r))
+  const dispatch = () => routes.forEach(x => x(window.location.path))
+  const go = (path, title) => {
+    window.history.pushState(path, undefined, title)
+    dispatch()
   }
+  const handleEvent = e => {
+    e.preventDefault()
+    go(e.target.href, e.target.title)
+  }
+
+  window.onpopstate = dispatch
+  dispatch()
+
+  return {add, go, handleEvent}
 }

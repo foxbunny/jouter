@@ -1,19 +1,41 @@
-import {curry} from './jouter'
+import {routeRe, route, createRouter} from './jouter'
 
-// Utility functions
+describe('routeRe', () => {
+  test('routeRe will convert tokens to regexp', () => {
+    expect(routeRe('/:foo/drink-:bar')).toEqual(/^\/([^\/]+)\/drink-([^\/]+)$/)
+  })
 
-test('curried function returns a function when not enough args', () => {
-  const curried = curry((x, y) => x + y)
-  expect(curried(2)).toBeInstanceOf(Function)
+  test('routeRe will match route as is if no tokens', () => {
+    expect(routeRe('/about')).toEqual(/^\/about$/)
+  })
 })
 
-test('curried functions can be partially applied', () => {
-  const curried = curry((x, y) => x + y)
-  const curried4 = curried(4)
-  expect(curried4(2)).toBe(6)
+describe('route', () => {
+  test('route takes function and route, and returns a function', () => {
+    expect(route(x => x, '/:foo')).toBeInstanceOf(Function)
+  })
+
+  test('passed function will be invoked if path matches the route', () => {
+    const f = jest.fn()
+    const r = route(f, '/:foo')
+    r('/bar')
+    expect(f).toHaveBeenCalledWith('bar')
+  })
+
+  test('passed function will not be invoked on mismatch', () => {
+    const f = jest.fn()
+    const r = route(f, '/:foo')
+    r('/foo/bar')
+    expect(f).not.toHaveBeenCalled()
+  })
 })
 
-test('curried function take arguments as long as there are not enough', () => {
-  const curried = curry((x, y) => x + y)
-  expect(curried()()(1)()(2)).toBe(3)
+describe('createRouter', () => {
+  test('adding and dispatching', () => {
+    const r = createRouter()
+    const f = jest.fn()
+    r.add(f, '/foo')
+    r.go('/foo', 'Foo')
+    expect(f).toHaveBeenCalled()
+  })
 })
