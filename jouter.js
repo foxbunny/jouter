@@ -28,9 +28,10 @@ export const createRouter = () => {
     e.preventDefault()
     go(e.target.href, e.target.title)
   }
+  const start = () => {
+    window.onpopstate = dispatch
+    dispatch()
+  }
 
-  window.onpopstate = dispatch
-  dispatch()
-
-  return {add, go, handleEvent}
+  return {add, go, handleEvent, start}
 }
