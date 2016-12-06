@@ -19,9 +19,9 @@ export const createRouter = () => {
   const routes = []
 
   const add = (f, r) => routes.push(route(f, r))
-  const dispatch = () => routes.forEach(x => x(window.location.path))
+  const dispatch = () => routes.forEach(x => x(window.location.pathname))
   const go = (path, title) => {
-    window.history.pushState(path, undefined, title)
+    window.history.pushState(undefined, title, path)
     dispatch()
   }
   const handleEvent = e => {
