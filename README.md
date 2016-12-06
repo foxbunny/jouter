@@ -14,6 +14,12 @@ Jouter is written as an ES6 module. The compiled version is available in the
 it can be used with AMD and CommonJS loaders, or as `jouter` browser global
 when added to your project with a simple `<script>` tag.
 
+You can also install Jouter using `npm`:
+
+```shell
+npm install --save jouter
+```
+
 ## Basic usage
 
 Before you can do anything with Jouter, you need to create a router object.
