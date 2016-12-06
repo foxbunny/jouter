@@ -1,0 +1,42 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>Jouter test</title>
+  </head>
+  <body>
+    <div id="out">
+    </div>
+
+    <nav>
+      <a id="a1" href="/test/1">Link 1</a>
+      <a id="a2" href="/test/2">Link 2</a>
+      <a id="a3" href="/test/3">Link 3</a>
+      <a id="a4" href="/test/4">Link 4</a>
+    </nav>
+
+    <script src="../dist/jouter.js"></script>
+    <script>
+      'use strict'
+
+      var router = jouter.createRouter()
+
+      router.add(function (n) {
+        alert('Clicked link #' + n);
+      }, '/test/:n')
+
+      var out = document.getElementById('out')
+      var a1 = document.getElementById('a1')
+      var a2 = document.getElementById('a2')
+      var a3 = document.getElementById('a3')
+      var a4 = document.getElementById('a4');
+
+      a1.onclick = router.handleEvent
+      a2.onclick = router.handleEvent
+      a3.onclick = router.handleEvent
+      a4.onclick = router.handleEvent
+
+      router.start()
+    </script>
+  </body>
+</html>
