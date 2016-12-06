@@ -3,17 +3,41 @@
 <html>
   <head>
     <title>Jouter test</title>
+    <style>
+    body {
+      font-family: sans-serif;
+      font-size: 18px;
+    }
+
+    nav {
+      margin-bottom: 1rem;
+    }
+
+    div {
+      background: #dd7;
+      padding: 1rem;
+    }
+
+    a {
+      background: #449;
+      border-radius: 5px;
+      color: white;
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+    }
+    </style>
   </head>
   <body>
-    <div id="out">
-    </div>
-
     <nav>
-      <a id="a1" href="/test/1">Link 1</a>
-      <a id="a2" href="/test/2">Link 2</a>
-      <a id="a3" href="/test/3">Link 3</a>
-      <a id="a4" href="/test/4">Link 4</a>
+      <a id="main" href="/example/" title="Main page">Main page</a>
+      <a id="a1" href="/example/1" title="Section 1">Link 1</a>
+      <a id="a2" href="/example/2" title="Section 2">Link 2</a>
+      <a id="a3" href="/example/3" title="Section 3">Link 3</a>
+      <a id="a4" href="/example/4" title="Section 4">Link 4</a>
     </nav>
+
+    <div id="out"></div>
 
     <script src="../dist/jouter.js"></script>
     <script>
@@ -21,20 +45,25 @@
 
       var router = jouter.createRouter()
 
-      router.add(function (n) {
-        alert('Clicked link #' + n);
-      }, '/test/:n')
-
       var out = document.getElementById('out')
+      var main = document.getElementById('main')
       var a1 = document.getElementById('a1')
       var a2 = document.getElementById('a2')
       var a3 = document.getElementById('a3')
-      var a4 = document.getElementById('a4');
+      var a4 = document.getElementById('a4')
 
-      a1.onclick = router.handleEvent
-      a2.onclick = router.handleEvent
-      a3.onclick = router.handleEvent
-      a4.onclick = router.handleEvent
+      var pages = [main, a1, a2, a3, a4]
+      pages.forEach(function (elem) {
+        elem.onclick = router.handleEvent
+      })
+
+      router.add(function () {
+        out.innerText = 'Main page'
+      }, '/example/')
+
+      router.add(function (n) {
+        out.innerText = 'Section #' + n
+      }, '/example/:n')
 
       router.start()
     </script>
