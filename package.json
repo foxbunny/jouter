@@ -2,7 +2,7 @@
   "name": "jouter",
   "version": "0.0.1",
   "description": "JavaScript client-side routing",
-  "main": "index.js",
+  "main": "dist/jouter.js",
   "directories": {
     "test": "test"
   },
