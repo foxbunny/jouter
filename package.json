@@ -11,7 +11,7 @@
     "test:start": "jest --watch",
     "build": "babel jouter.js -o dist/jouter.js",
     "build:min": "babel jouter.js -o dist/jouter.min.js --minified",
-    "start": "http-server -o"
+    "start": "http-server dist -o"
   },
   "keywords": [
     "client-side",

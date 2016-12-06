@@ -30,16 +30,16 @@
   </head>
   <body>
     <nav>
-      <a id="main" href="/example/" title="Main page">Main page</a>
-      <a id="a1" href="/example/1" title="Section 1">Link 1</a>
-      <a id="a2" href="/example/2" title="Section 2">Link 2</a>
-      <a id="a3" href="/example/3" title="Section 3">Link 3</a>
-      <a id="a4" href="/example/4" title="Section 4">Link 4</a>
+      <a id="main" href="/" title="Main page">Main page</a>
+      <a id="a1" href="/sections/1" title="Section 1">Link 1</a>
+      <a id="a2" href="/sections/2" title="Section 2">Link 2</a>
+      <a id="a3" href="/sections/3" title="Section 3">Link 3</a>
+      <a id="a4" href="/sections/4" title="Section 4">Link 4</a>
     </nav>
 
     <div id="out"></div>
 
-    <script src="../dist/jouter.js"></script>
+    <script src="/jouter.js"></script>
     <script>
       'use strict'
 
@@ -59,11 +59,11 @@
 
       router.add(function () {
         out.innerText = 'Main page'
-      }, '/example/')
+      }, '/')
 
       router.add(function (n) {
         out.innerText = 'Section #' + n
-      }, '/example/:n')
+      }, '/section/:n')
 
       router.start()
     </script>
