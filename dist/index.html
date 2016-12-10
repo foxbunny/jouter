@@ -37,6 +37,9 @@
       <a id="a4" href="/sections/4" title="Section 4">Link 4</a>
       <a id="c1" href="/complex/foo-1" title="Complex 1">Complex 1</a>
       <a id="c2" href="/complex/bar-2" title="Complex 2">Complex 2</a>
+      <a id="s1" href="/sub/foo" title="Sub/Foo">Sub/Foo</a>
+      <a id="s2" href="/sub/bar/1" title="Sub/Bar/1">Sub/Bar/1</a>
+      <a id="s3" href="/sub/bar/2" title="Sub/Bar/2">Sub/Bar/1</a>
     </nav>
 
     <div id="out"></div>
@@ -44,9 +47,6 @@
     <script src="/jouter.js"></script>
     <script>
       'use strict'
-
-      var router = jouter.createRouter()
-
       var out = document.getElementById('out')
       var main = document.getElementById('main')
       var a1 = document.getElementById('a1')
@@ -55,23 +55,55 @@
       var a4 = document.getElementById('a4')
       var c1 = document.getElementById('c1')
       var c2 = document.getElementById('c2')
+      var s1 = document.getElementById('s1')
+      var s2 = document.getElementById('s2')
+      var s3 = document.getElementById('s3')
 
-      var pages = [main, a1, a2, a3, a4, c1, c2]
+      var pages = [main, a1, a2, a3, a4, c1, c2, s1, s2, s3]
+
+      // Create router
+
+      var router = jouter.createRouter()
+
+      // Handle clicks from navigation links
+
       pages.forEach(function (elem) {
         elem.onclick = router.handleEvent
       })
+
+      // Route without placeholders
 
       router.add(function () {
         out.innerText = 'Main page'
       }, '/')
 
+      // Route with a placeholder
+
       router.add(function (n) {
         out.innerText = 'Section #' + n
       }, '/sections/:n')
 
+      // Route using RegExp
+
       router.add(function (n) {
         out.innerText = 'Complex #' + n
       }, /^\/complex\/(?:foo|bar)-(\d)$/)
+
+      // Router composition
+
+      var subrouter = jouter.createRouter()
+
+      subrouter.add(function () {
+        out.innerText = 'Foo subsection'
+      }, '/foo')
+
+      subrouter.add(function (n) {
+        out.innerText = 'Bar subsection #' + n
+      }, '/bar/:n')
+
+      router.add(subrouter, '/sub/...')
+
+      // Start the routing
 
       router.start()
     </script>
