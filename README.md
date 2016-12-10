@@ -5,6 +5,8 @@ compared to some of the other libraries that do similar things is it's
 extremely small footprint (under 1KB minified and gzipped).
 
 [![Build Status](https://travis-ci.org/foxbunny/jouter.svg?branch=master)](https://travis-ci.org/foxbunny/jouter)
+[![npm version](https://badge.fury.io/js/jouter.svg)](https://badge.fury.io/js/jouter)
+[![codecov](https://codecov.io/gh/foxbunny/jouter/branch/master/graph/badge.svg)](https://codecov.io/gh/foxbunny/jouter)
 
 ## Installation and usage
 
