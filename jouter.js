@@ -1,11 +1,17 @@
 const TOKEN_RE = /:[^\/]+/g
 const ANY_RE = /\*/g
+const SUBPATH_RE = /\/\.\.\./g
+
+export const regexify = x =>
+  x.replace(TOKEN_RE, '([^/]+)')
+   .replace(ANY_RE, '.*')
+   .replace(SUBPATH_RE, '(\/.*)')
 
 // parseRoute :: String | RegExp -> RegExp
 export const routeRe = x =>
   x instanceof RegExp ?
     new RegExp(x.source)
-  : new RegExp(`^${x.replace(TOKEN_RE, '([^/]+)').replace(ANY_RE, '.*')}$`)
+  : new RegExp(`^${regexify(x)}$`)
 
 // route :: (* -> *), String -> Route -> (String -> _)
 export const route = (f, r) => {

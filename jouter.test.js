@@ -22,6 +22,10 @@ describe('routeRe', () => {
     const rx = /\/foo/gi
     expect(routeRe(rx)).toEqual(/\/foo/)
   })
+
+  test('will match prefix wildcards', () => {
+    expect(routeRe('/foo/...')).toEqual(/^\/foo(\/.*)$/)
+  })
 })
 
 describe('route', () => {
