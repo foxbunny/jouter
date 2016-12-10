@@ -83,6 +83,37 @@ a.onclick = router.handleEvent
 
 That's it, we've covered all of the public APIs.
 
+## Path handler
+
+When creating a router object, we have the ability to pass a path handler
+object, which customizes the way paths are physically handled.
+
+The default path handler looks like this:
+
+```javascript
+var pathHandler = {
+  get: function () { return window.location.pathname },
+  set: function (path, title) {
+    window.history.pushState(undefined, title, path),
+  },
+  listen: function (f) { window.onpopstate = f }
+}
+```
+
+The handle object encapsulates the implementation details specific to the
+environment (in this case, a browser). By implementing a new handler object,
+and passing it to `createRouter()`, we can adapt the router to different
+environments or use different routing implementation in the browser (e.g.,
+use hashes instead of History API).
+
+The `handler.get()` function must return the current path as a string.
+
+The `handler.set()` function must take a path, and optionally a title, and
+cause the application to switch to the specified path.
+
+Finally, the `handler.listen()` function will take a function that is to be
+invoked without any arguments every time current path changes.
+
 ## Examples
 
 A working example is available in the `dist` directory. To run the example,
