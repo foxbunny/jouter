@@ -12,6 +12,16 @@ describe('routeRe', () => {
   test('will match wildcard', () => {
     expect(routeRe('/foo/*')).toEqual(/^\/foo\/.*$/)
   })
+
+  test('will return regexp as is if passed one', () => {
+    const rx = /\/foo/
+    expect(routeRe(rx)).toEqual(rx)
+  })
+
+  test('when passed a regexp, it will strip any flags', () => {
+    const rx = /\/foo/gi
+    expect(routeRe(rx)).toEqual(/\/foo/)
+  })
 })
 
 describe('route', () => {
@@ -31,6 +41,13 @@ describe('route', () => {
     const r = route(f, '/:foo')
     r('/foo/bar')
     expect(f).not.toHaveBeenCalled()
+  })
+
+  test('can use regexp as route', () => {
+    const f = jest.fn()
+    const r = route(f, /^\/foo-(\d+)/)
+    r('/foo-2')
+    expect(f).toHaveBeenCalledWith('2')
   })
 })
 
