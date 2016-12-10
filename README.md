@@ -2,7 +2,7 @@
 
 Jouter is a minimalist client-side routing library. It's main advantage
 compared to some of the other libraries that do similar things is it's
-extremely small footprint (721 bytes minified and gzipped).
+extremely small footprint (under 1KB minified and gzipped).
 
 [![Build Status](https://travis-ci.org/foxbunny/jouter.svg?branch=master)](https://travis-ci.org/foxbunny/jouter)
 
