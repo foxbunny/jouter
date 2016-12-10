@@ -121,4 +121,19 @@ describe('createRouter', () => {
     expect(fn).toHaveBeenCalledWith('baz')
     expect(currentPath).toBe('/baz')
   })
+
+  test('router object is a function', () => {
+    const router = createRouter(fakePathHandler)
+    expect(router).toBeInstanceOf(Function)
+  })
+
+  test('router objects can be used as route handlers', () => {
+    const router = createRouter(fakePathHandler)
+    const subrouter = createRouter(fakePathHandler)
+    const fn = jest.fn()
+    router.add(subrouter, '/sub/...')
+    subrouter.add(fn, '/foo/:x')
+    router.go('/sub/foo/2')
+    expect(fn).toHaveBeenCalledWith('2')
+  })
 })
