@@ -32,9 +32,9 @@
   var TOKEN_RE = /:[^\/]+/g;
   var ANY_RE = /\*/g;
 
-  // parseRoute :: String -> RegExp
+  // parseRoute :: String | RegExp -> RegExp
   var routeRe = exports.routeRe = function routeRe(x) {
-    return new RegExp('^' + x.replace(TOKEN_RE, '([^/]+)').replace(ANY_RE, '.*') + '$');
+    return x instanceof RegExp ? new RegExp(x.source) : new RegExp('^' + x.replace(TOKEN_RE, '([^/]+)').replace(ANY_RE, '.*') + '$');
   };
 
   // route :: (* -> *), String -> Route -> (String -> _)
