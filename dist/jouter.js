@@ -47,19 +47,39 @@
     };
   };
 
+  // Unsafe functions
+  var pathHandler = exports.pathHandler = {
+    // get :: _ -> String
+    get: function get() {
+      return window.location.pathname;
+    },
+
+    // set :: (path, title) -> _
+    set: function set(path, title) {
+      return window.history.pushState(undefined, title, path);
+    },
+
+    // listen :: Function -> _
+    listen: function listen(f) {
+      return window.onpopstate = f;
+    }
+  };
+
   var createRouter = exports.createRouter = function createRouter() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : pathHandler;
+
     var routes = [];
 
     var add = function add(f, r) {
       return routes.push(route(f, r));
     };
     var dispatch = function dispatch() {
-      return routes.forEach(function (x) {
-        return x(window.location.pathname);
+      return routes.forEach(function (f) {
+        return f(path.get());
       });
     };
-    var go = function go(path, title) {
-      window.history.pushState(undefined, title, path);
+    var go = function go(p, t) {
+      path.set(p, t);
       dispatch();
     };
     var handleEvent = function handleEvent(e) {
@@ -67,7 +87,7 @@
       go(e.target.href, e.target.title);
     };
     var start = function start() {
-      window.onpopstate = dispatch;
+      path.listen(dispatch);
       dispatch();
     };
 
