@@ -31,10 +31,15 @@
 
   var TOKEN_RE = /:[^\/]+/g;
   var ANY_RE = /\*/g;
+  var SUBPATH_RE = /\/\.\.\./g;
+
+  var regexify = exports.regexify = function regexify(x) {
+    return x.replace(TOKEN_RE, '([^/]+)').replace(ANY_RE, '.*').replace(SUBPATH_RE, '(\/.*)');
+  };
 
   // parseRoute :: String | RegExp -> RegExp
   var routeRe = exports.routeRe = function routeRe(x) {
-    return x instanceof RegExp ? new RegExp(x.source) : new RegExp('^' + x.replace(TOKEN_RE, '([^/]+)').replace(ANY_RE, '.*') + '$');
+    return x instanceof RegExp ? new RegExp(x.source) : new RegExp('^' + regexify(x) + '$');
   };
 
   // route :: (* -> *), String -> Route -> (String -> _)
@@ -73,14 +78,14 @@
     var add = function add(f, r) {
       return routes.push(route(f, r));
     };
-    var dispatch = function dispatch() {
+    var dispatch = function dispatch(p) {
       return routes.forEach(function (f) {
-        return f(path.get());
+        return f(p);
       });
     };
     var go = function go(p, t) {
       path.set(p, t);
-      dispatch();
+      dispatch(path.get());
     };
     var handleEvent = function handleEvent(e) {
       e.preventDefault();
@@ -88,9 +93,16 @@
     };
     var start = function start() {
       path.listen(dispatch);
-      dispatch();
+      dispatch(path.get());
     };
 
-    return { add: add, go: go, handleEvent: handleEvent, start: start };
+    var dispatchRoutes = function dispatchRoutes(subpath) {
+      return dispatch(subpath);
+    };
+    dispatchRoutes.add = add;
+    dispatchRoutes.go = go;
+    dispatchRoutes.handleEvent = handleEvent;
+    dispatchRoutes.start = start;
+    return dispatchRoutes;
   };
 });
