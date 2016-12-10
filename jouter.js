@@ -1,11 +1,17 @@
 const TOKEN_RE = /:[^\/]+/g
 const ANY_RE = /\*/g
+const SUBPATH_RE = /\/\.\.\./g
+
+export const regexify = x =>
+  x.replace(TOKEN_RE, '([^/]+)')
+   .replace(ANY_RE, '.*')
+   .replace(SUBPATH_RE, '(\/.*)')
 
 // parseRoute :: String | RegExp -> RegExp
 export const routeRe = x =>
   x instanceof RegExp ?
     new RegExp(x.source)
-  : new RegExp(`^${x.replace(TOKEN_RE, '([^/]+)').replace(ANY_RE, '.*')}$`)
+  : new RegExp(`^${regexify(x)}$`)
 
 // route :: (* -> *), String -> Route -> (String -> _)
 export const route = (f, r) => {
@@ -34,10 +40,10 @@ export const createRouter = (path = pathHandler) => {
   let routes = []
 
   const add = (f, r) => routes.push(route(f, r))
-  const dispatch = () => routes.forEach(f => f(path.get()))
+  const dispatch = p => routes.forEach(f => f(p))
   const go = (p, t) => {
     path.set(p, t)
-    dispatch()
+    dispatch(path.get())
   }
   const handleEvent = e => {
     e.preventDefault()
@@ -45,8 +51,13 @@ export const createRouter = (path = pathHandler) => {
   }
   const start = () => {
     path.listen(dispatch)
-    dispatch()
+    dispatch(path.get())
   }
 
-  return {add, go, handleEvent, start}
+  const dispatchRoutes = subpath => dispatch(subpath)
+  dispatchRoutes.add = add
+  dispatchRoutes.go = go
+  dispatchRoutes.handleEvent = handleEvent
+  dispatchRoutes.start = start
+  return dispatchRoutes
 }
