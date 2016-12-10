@@ -33,3 +33,71 @@ describe('route', () => {
     expect(f).not.toHaveBeenCalled()
   })
 })
+
+describe('createRouter', () => {
+  let currentPath = '/foo'
+  let listeners = []
+
+  beforeEach(() => {
+    currentPath = '/foo'
+    listeners = []
+  })
+
+  const fakePathHandler = {
+    get: jest.fn(() => currentPath),
+    set: jest.fn((path, title) => {
+      currentPath = path
+      listeners.forEach(f => f())
+    }),
+    listen: jest.fn(f => listeners.push(f))
+  }
+
+  test('will return a router object', () => {
+    const router = createRouter()
+    expect(router.add).toBeInstanceOf(Function)
+    expect(router.start).toBeInstanceOf(Function)
+    expect(router.handleEvent).toBeInstanceOf(Function)
+    expect(router.go).toBeInstanceOf(Function)
+  })
+
+  test('switching paths', () => {
+    const router = createRouter(fakePathHandler)
+    router.go('/test')
+    expect(currentPath).toBe('/test')
+  })
+
+  test('adding and handling routes', () => {
+    const router = createRouter(fakePathHandler)
+    const fn = jest.fn()
+    router.add(fn, '/:x')
+    router.go('/bar')
+    expect(fn).toHaveBeenCalledWith('bar')
+  })
+
+  test('start routing', () => {
+    const router = createRouter(fakePathHandler)
+    const fn = jest.fn()
+    router.add(fn, '/:x')
+    router.start()
+    expect(listeners.length).toBe(1)
+    listeners[0]()
+    expect(fn).toHaveBeenCalledWith('foo')
+  })
+
+  test('handing events', () => {
+    const router = createRouter(fakePathHandler)
+    const fn = jest.fn()
+    const fakeEvent = {
+      preventDefault: jest.fn(),
+      target: {
+        href: '/baz',
+        title: 'Baz'
+      }
+    }
+    router.add(fn, '/:x')
+    router.handleEvent(fakeEvent)
+    expect(fakeEvent.preventDefault).toHaveBeenCalled()
+    expect(fn).toHaveBeenCalledWith('baz')
+    expect(currentPath).toBe('/baz')
+  })
+})

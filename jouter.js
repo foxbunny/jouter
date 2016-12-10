@@ -15,13 +15,26 @@ export const route = (f, r) => {
   }
 }
 
-export const createRouter = () => {
-  const routes = []
+// Unsafe functions
+export const pathHandler = {
+  // get :: _ -> String
+  get: () => window.location.pathname,
+
+  // set :: (path, title) -> _
+  set: (path, title) =>
+    window.history.pushState(undefined, title, path),
+
+  // listen :: Function -> _
+  listen: f => window.onpopstate = f,
+}
+
+export const createRouter = (path = pathHandler) => {
+  let routes = []
 
   const add = (f, r) => routes.push(route(f, r))
-  const dispatch = () => routes.forEach(x => x(window.location.pathname))
-  const go = (path, title) => {
-    window.history.pushState(undefined, title, path)
+  const dispatch = () => routes.forEach(f => f(path.get()))
+  const go = (p, t) => {
+    path.set(p, t)
     dispatch()
   }
   const handleEvent = e => {
@@ -29,7 +42,7 @@ export const createRouter = () => {
     go(e.target.href, e.target.title)
   }
   const start = () => {
-    window.onpopstate = dispatch
+    path.listen(dispatch)
     dispatch()
   }
 
