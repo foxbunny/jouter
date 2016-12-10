@@ -47,6 +47,17 @@ positional arguments.
 Wildcard placeholders are written as a single `*` character, and will swallow
 any number of characters including slashes.
 
+Alternatively, a `RegExp` object can be used directly as a route:
+
+```javascript
+router.add(function (x) {
+  console.log(x)
+}, /^\/user\/(?:add|remove)\/([0-9a-f]{7})$/)
+```
+
+**NOTE:** When using a `RegExp` object as a route, flags are ignored. For
+instance, `/foo/gi` would be interpreted as `/foo/`.
+
 You can add multiple handlers for the same route.
 
 Once you've added all the routes, you can start the router:
