@@ -35,6 +35,8 @@
       <a id="a2" href="/sections/2" title="Section 2">Link 2</a>
       <a id="a3" href="/sections/3" title="Section 3">Link 3</a>
       <a id="a4" href="/sections/4" title="Section 4">Link 4</a>
+      <a id="c1" href="/complex/foo-1" title="Complex 1">Complex 1</a>
+      <a id="c2" href="/complex/bar-2" title="Complex 2">Complex 2</a>
     </nav>
 
     <div id="out"></div>
@@ -51,8 +53,10 @@
       var a2 = document.getElementById('a2')
       var a3 = document.getElementById('a3')
       var a4 = document.getElementById('a4')
+      var c1 = document.getElementById('c1')
+      var c2 = document.getElementById('c2')
 
-      var pages = [main, a1, a2, a3, a4]
+      var pages = [main, a1, a2, a3, a4, c1, c2]
       pages.forEach(function (elem) {
         elem.onclick = router.handleEvent
       })
@@ -64,6 +68,10 @@
       router.add(function (n) {
         out.innerText = 'Section #' + n
       }, '/sections/:n')
+
+      router.add(function (n) {
+        out.innerText = 'Complex #' + n
+      }, /^\/complex\/(?:foo|bar)-(\d)$/)
 
       router.start()
     </script>
