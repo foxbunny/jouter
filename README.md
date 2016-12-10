@@ -58,6 +58,19 @@ router.add(function (x) {
 **NOTE:** When using a `RegExp` object as a route, flags are ignored. For
 instance, `/foo/gi` would be interpreted as `/foo/`.
 
+You can also use ellipsis pattern to match *and* capture sub paths. For
+instance:
+
+```javascript
+router.add(function (sub) {
+  // Sub will be any portion of the path after /foo
+}, '/foo/...')
+```
+
+Note that the pattern is `/...`, not just `...`. The slash after the prefix
+`/foo` is included in the match. This pattern is especially useful for working
+with sub routes which are discussed further below.
+
 You can add multiple handlers for the same route.
 
 Once you've added all the routes, you can start the router:
@@ -93,6 +106,39 @@ a.onclick = router.handleEvent
 ```
 
 That's it, we've covered all of the public APIs.
+
+## Sub routes
+
+The router object also doubles as a route handler. This allows several router
+objects to be composed together. Here is a simple example:
+
+```javascript
+var root = createRouter()
+
+var users = createRouter()
+
+users.add(function () {
+  // create a new user
+})
+
+users.add(function (id) {
+  // do something with user id
+}, '/edit/:id')
+
+users.add(function (id) {
+  // delete user
+}, '/delete/:id')
+
+root.add(users, '/users/...')
+root.start()
+```
+
+The `/...` at the end of a route captures the remainder of the route after
+`/users`, and calls the router on the captured part. The route handlers mapped
+to the `users` router will match `/users/add`, `/users/edit/:id`, and so on.
+
+The `users` router is otherwise a router just like any other, and the only
+difference is that we don't call `start()` on it.
 
 ## Path handler
 
