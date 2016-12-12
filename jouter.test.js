@@ -1,16 +1,16 @@
-import {routeRe, route, createRouter} from './jouter'
+import { routeRe, route, createRouter } from './jouter'
 
 describe('routeRe', () => {
   test('will convert tokens to regexp', () => {
-    expect(routeRe('/:foo/drink-:bar')).toEqual(/^\/([^\/]+)\/drink-([^\/]+)$/)
+    expect(routeRe('/:foo/drink-:bar')).toMatchSnapshot()
   })
 
   test('will match route as is if no tokens', () => {
-    expect(routeRe('/about')).toEqual(/^\/about$/)
+    expect(routeRe('/about')).toMatchSnapshot()
   })
 
   test('will match wildcard', () => {
-    expect(routeRe('/foo/*')).toEqual(/^\/foo\/.*$/)
+    expect(routeRe('/foo/*')).toMatchSnapshot()
   })
 
   test('will return regexp as is if passed one', () => {
@@ -24,7 +24,7 @@ describe('routeRe', () => {
   })
 
   test('will match prefix wildcards', () => {
-    expect(routeRe('/foo/...')).toEqual(/^\/foo(\/.*)$/)
+    expect(routeRe('/foo/...')).toMatchSnapshot()
   })
 })
 
