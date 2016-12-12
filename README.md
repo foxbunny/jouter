@@ -1,7 +1,7 @@
 # Jouter
 
 Jouter is a minimalist client-side routing library. It's main advantage
-compared to some of the other libraries that do similar things is it's
+compared to some of the other libraries that do similar things is its
 extremely small footprint (under 1KB minified and gzipped).
 
 [![Build Status](https://travis-ci.org/foxbunny/jouter.svg?branch=master)](https://travis-ci.org/foxbunny/jouter)
@@ -190,6 +190,18 @@ npm start
 ```
 
 The default browser will open automatically.
+
+## Getting the sources
+
+The Jouter sources are hosted [on GitHub](https://github.com/foxbunny/jouter).
+If you like it, don't forget to stop by and star it!
+
+## Reporting issues
+
+Jouter is a young library. It's virtually guaranteed to miss a feature or two
+that you may need, or have a bug in your particular use case. If you need to
+report an issue, use the
+[GitHub issue tracker](https://github.com/foxbunny/jouter/issues).
 
 ## License
 
