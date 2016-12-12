@@ -1,0 +1,7 @@
+exports[`routeRe will convert tokens to regexp 1`] = `/^\/([^\/]+)\/drink-([^\/]+)$/`;
+
+exports[`routeRe will match prefix wildcards 1`] = `/^\/foo(\/.*)$/`;
+
+exports[`routeRe will match route as is if no tokens 1`] = `/^\/about$/`;
+
+exports[`routeRe will match wildcard 1`] = `/^\/foo\/.*$/`;
