@@ -34,6 +34,9 @@ const pathHandler = {
 
   // listen :: (* -> *) -> _
   listen: f => window.onpopstate = f,
+
+  // decorate :: (* -> *) -> (* -> *)
+  decorate: f => f
 }
 
 export const createRouter = (myPathHandler = {}) => {
@@ -43,8 +46,8 @@ export const createRouter = (myPathHandler = {}) => {
     ...myPathHandler
   }
 
-  const add = (f, r) => routes.push(route(f, r))
-  const dispatch = p => routes.forEach(f => f(p))
+  const add = (f, r) => 
+    routes.push(route(path.decorate(f), r))
 
   const dispatch = p => 
     routes.forEach(f => f(p))

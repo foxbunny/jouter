@@ -81,4 +81,16 @@ describe('createRouter', () => {
     router.go('/sub/foo/2')
     expect(fn).toHaveBeenCalledWith('2')
   })
+
+  test('router object can be created with a decorator function', () => {
+    const injectedDependency = {foo: 'bar'}
+    const fn = jest.fn()
+    const router = createRouter({
+      ...fakePathHandler, 
+      decorate: fn => (...args) => fn(injectedDependency, ...args)
+    })
+    router.add(fn, '/:x')
+    router.go('/12')
+    expect(fn).toHaveBeenCalledWith(injectedDependency, '12')
+  })
 })
