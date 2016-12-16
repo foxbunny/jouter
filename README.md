@@ -2,7 +2,7 @@
 
 Jouter is a minimalist client-side routing library. It's main advantage
 compared to some of the other libraries that do similar things is its
-extremely small footprint (under 1KB minified and gzipped).
+extremely small footprint (around 1KB minified and gzipped).
 
 [![Build Status](https://travis-ci.org/foxbunny/jouter.svg?branch=master)](https://travis-ci.org/foxbunny/jouter)
 [![codecov](https://codecov.io/gh/foxbunny/jouter/branch/master/graph/badge.svg)](https://codecov.io/gh/foxbunny/jouter)
@@ -155,23 +155,74 @@ var pathHandler = {
   set: function (path, title) {
     window.history.pushState(undefined, title, path),
   },
-  listen: function (f) { window.onpopstate = f }
+  listen: function (f) { window.onpopstate = f },
+  decorate: function (f) { return f }
 }
 ```
 
-The handle object encapsulates the implementation details specific to the
+The handler object encapsulates the implementation details specific to the
 environment (in this case, a browser). By implementing a new handler object,
 and passing it to `createRouter()`, we can adapt the router to different
 environments or use different routing implementation in the browser (e.g.,
 use hashes instead of History API).
 
-The `handler.get()` function must return the current path as a string.
+In addition to containing the environment-specific functionality, the handler
+objects can also be used to customize the behavior of the route functions.
 
-The `handler.set()` function must take a path, and optionally a title, and
-cause the application to switch to the specified path.
+* `handler.get()`: must return the current path as a string.
 
-Finally, the `handler.listen()` function will take a function that is to be
-invoked without any arguments every time current path changes.
+* `handler.set(path, title)`: must take a path, and optionally a title, and
+  cause the application to switch to the specified path.
+
+* `handler.listen(func)`: must take a function that is to be invoked without 
+  any arguments every time current path changes.
+
+* `handler.decorate(func)`: must take a function and return a function. This 
+  can be used to customize route handler functions centrally (e.g., perform
+  dependency injection).
+
+When passing a handler object to `createRouter()`, we may pass an object that
+contains a subset of the properties listed above, and thus override only the
+aspects of route handling that we are interested in.
+
+## Decorating route handlers
+
+In some situations, we may want to modify the behavior of all the route 
+handler functions. Purpose of decorating route handlers may vary depending 
+on your situation, but a common use case is dependency injection.
+
+For example, let's say we are working on an application that uses some secret
+token that must be available to route handlers. For some reason (e.g., to make
+code easier to test), we don't want to, or cannot, import the token into 
+individual modules where our route handlers are defined. In this situation, we
+can give the token to a decorator function, and let it inject the token into
+all our route handlers, such that they will receive it as their first argument,
+followed by any arguments that were part of the URL.
+
+```javascript
+var myHandler = function (token, arg1, arg2) {
+  // ....
+}
+
+var decorator = (function (token) {
+  return function realDecorator(fn) { 
+    return function wrapper() {
+      var args = [token].concat([].slice.call(arguments))
+      return fn.apply(undefined, args)
+    }
+  }
+})(generateToken())
+
+var router = jouter.createRouter({decorate: decorator})
+router.add(myHandler, '/:x/:y')
+router.start()
+```
+
+In the above example, the token is generated ad-hoc, and not importable into 
+other modules. The `decorator()` function is the only piece of code that has
+access to the token, and it makes it available to the route handlers by 
+returning a decorated proxy handler function that takes the route arguments
+and calls the actual handler with the token as the first argument.
 
 ## Examples
 
