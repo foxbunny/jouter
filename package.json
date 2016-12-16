@@ -1,6 +1,6 @@
 {
   "name": "jouter",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "JavaScript client-side routing",
   "main": "dist/jouter.js",
   "directories": {
