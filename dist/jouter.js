@@ -17,6 +17,20 @@
     value: true
   });
 
+  var _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
   function _toConsumableArray(arr) {
     if (Array.isArray(arr)) {
       for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
@@ -42,7 +56,7 @@
     return x instanceof RegExp ? new RegExp(x.source) : new RegExp('^' + regexify(x) + '$');
   };
 
-  // route :: (* -> *), String -> Route -> (String -> _)
+  // route ::  (* -> *), String -> (String -> _)
   var route = exports.route = function route(f, r) {
     var re = routeRe(r);
     return function (path) {
@@ -64,33 +78,43 @@
       return window.history.pushState(undefined, title, path);
     },
 
-    // listen :: Function -> _
+    // listen :: (* -> *) -> _
     listen: function listen(f) {
       return window.onpopstate = f;
+    },
+
+    // decorate :: (* -> *) -> (* -> *)
+    decorate: function decorate(f) {
+      return f;
     }
   };
 
   var createRouter = exports.createRouter = function createRouter() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : pathHandler;
+    var myPathHandler = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     var routes = [];
+    var path = _extends({}, pathHandler, myPathHandler);
 
     var add = function add(f, r) {
-      return routes.push(route(f, r));
+      return routes.push(route(path.decorate(f), r));
     };
+
     var dispatch = function dispatch(p) {
       return routes.forEach(function (f) {
         return f(p);
       });
     };
+
     var go = function go(p, t) {
       path.set(p, t);
       dispatch(path.get());
     };
+
     var handleEvent = function handleEvent(e) {
       e.preventDefault();
       go(e.target.href, e.target.title);
     };
+
     var start = function start() {
       path.listen(dispatch);
       dispatch(path.get());
@@ -99,10 +123,12 @@
     var dispatchRoutes = function dispatchRoutes(subpath) {
       return dispatch(subpath);
     };
+
     dispatchRoutes.add = add;
     dispatchRoutes.go = go;
     dispatchRoutes.handleEvent = handleEvent;
     dispatchRoutes.start = start;
+
     return dispatchRoutes;
   };
 });

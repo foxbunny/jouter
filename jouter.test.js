@@ -1,60 +1,5 @@
 import {routeRe, route, createRouter} from './jouter'
 
-describe('routeRe', () => {
-  test('will convert tokens to regexp', () => {
-    expect(routeRe('/:foo/drink-:bar')).toEqual(/^\/([^\/]+)\/drink-([^\/]+)$/)
-  })
-
-  test('will match route as is if no tokens', () => {
-    expect(routeRe('/about')).toEqual(/^\/about$/)
-  })
-
-  test('will match wildcard', () => {
-    expect(routeRe('/foo/*')).toEqual(/^\/foo\/.*$/)
-  })
-
-  test('will return regexp as is if passed one', () => {
-    const rx = /\/foo/
-    expect(routeRe(rx)).toEqual(rx)
-  })
-
-  test('when passed a regexp, it will strip any flags', () => {
-    const rx = /\/foo/gi
-    expect(routeRe(rx)).toEqual(/\/foo/)
-  })
-
-  test('will match prefix wildcards', () => {
-    expect(routeRe('/foo/...')).toEqual(/^\/foo(\/.*)$/)
-  })
-})
-
-describe('route', () => {
-  test('route takes function and route, and returns a function', () => {
-    expect(route(x => x, '/:foo')).toBeInstanceOf(Function)
-  })
-
-  test('passed function will be invoked if path matches the route', () => {
-    const f = jest.fn()
-    const r = route(f, '/:foo')
-    r('/bar')
-    expect(f).toHaveBeenCalledWith('bar')
-  })
-
-  test('passed function will not be invoked on mismatch', () => {
-    const f = jest.fn()
-    const r = route(f, '/:foo')
-    r('/foo/bar')
-    expect(f).not.toHaveBeenCalled()
-  })
-
-  test('can use regexp as route', () => {
-    const f = jest.fn()
-    const r = route(f, /^\/foo-(\d+)/)
-    r('/foo-2')
-    expect(f).toHaveBeenCalledWith('2')
-  })
-})
-
 describe('createRouter', () => {
   let currentPath = '/foo'
   let listeners = []
@@ -135,5 +80,17 @@ describe('createRouter', () => {
     subrouter.add(fn, '/foo/:x')
     router.go('/sub/foo/2')
     expect(fn).toHaveBeenCalledWith('2')
+  })
+
+  test('router object can be created with a decorator function', () => {
+    const injectedDependency = {foo: 'bar'}
+    const fn = jest.fn()
+    const router = createRouter({
+      ...fakePathHandler, 
+      decorate: fn => (...args) => fn(injectedDependency, ...args)
+    })
+    router.add(fn, '/:x')
+    router.go('/12')
+    expect(fn).toHaveBeenCalledWith(injectedDependency, '12')
   })
 })
