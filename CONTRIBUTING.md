@@ -2,6 +2,11 @@ Thank you for showing interest in Jouter. Your time and effort is much
 appreciated. Before you submit a pull request, please make sure your patches
 are in line with Jouter's development goals.
 
+# Test coverage
+
+Please make sure tests are passing and cover all testable code. By testabe code
+we mean any code that does not touch HTML APIs on the global object. 
+
 # It's a client-side routing library
 
 Server-side features can only be added as a bonus. Patches that degrade the
