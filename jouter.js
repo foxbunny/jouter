@@ -13,7 +13,7 @@ export const routeRe = x =>
     new RegExp(x.source)
   : new RegExp(`^${regexify(x)}$`)
 
-// route :: (* -> *), String -> Route -> (String -> _)
+// route ::  (* -> *), String -> (String -> _)
 export const route = (f, r) => {
   const re = routeRe(r)
   return path => {
@@ -28,11 +28,11 @@ export const pathHandler = {
   // get :: _ -> String
   get: () => window.location.pathname,
 
-  // set :: (path, title) -> _
+  // set :: (String, String) -> _
   set: (path, title) =>
     window.history.pushState(undefined, title, path),
 
-  // listen :: Function -> _
+  // listen :: (* -> *) -> _
   listen: f => window.onpopstate = f,
 }
 
@@ -45,23 +45,32 @@ export const createRouter = (myPathHandler = {}) => {
 
   const add = (f, r) => routes.push(route(f, r))
   const dispatch = p => routes.forEach(f => f(p))
+
+  const dispatch = p => 
+    routes.forEach(f => f(p))
+
   const go = (p, t) => {
     path.set(p, t)
     dispatch(path.get())
   }
+
   const handleEvent = e => {
     e.preventDefault()
     go(e.target.href, e.target.title)
   }
+
   const start = () => {
     path.listen(dispatch)
     dispatch(path.get())
   }
 
-  const dispatchRoutes = subpath => dispatch(subpath)
+  const dispatchRoutes = subpath =>
+   dispatch(subpath)
+
   dispatchRoutes.add = add
   dispatchRoutes.go = go
   dispatchRoutes.handleEvent = handleEvent
   dispatchRoutes.start = start
+
   return dispatchRoutes
 }
