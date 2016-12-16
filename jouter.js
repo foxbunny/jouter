@@ -36,8 +36,12 @@ export const pathHandler = {
   listen: f => window.onpopstate = f,
 }
 
-export const createRouter = (path = pathHandler) => {
+export const createRouter = (myPathHandler = {}) => {
   let routes = []
+  const path = {
+    ...pathHandler,
+    ...myPathHandler
+  }
 
   const add = (f, r) => routes.push(route(f, r))
   const dispatch = p => routes.forEach(f => f(p))
