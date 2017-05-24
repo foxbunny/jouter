@@ -63,7 +63,7 @@ export const createRouter = (myPathHandler = {}) => {
   }
 
   const start = () => {
-    path.listen(dispatch)
+    path.listen(() => dispatch(path.get()))
     dispatch(path.get())
   }
 

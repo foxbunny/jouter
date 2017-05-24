@@ -47,17 +47,17 @@
   var ANY_RE = /\*/g;
   var SUBPATH_RE = /\/\.\.\./g;
 
-  var regexify = exports.regexify = function regexify(x) {
+  var regexify = function regexify(x) {
     return x.replace(TOKEN_RE, '([^/]+)').replace(ANY_RE, '.*').replace(SUBPATH_RE, '(\/.*)');
   };
 
   // parseRoute :: String | RegExp -> RegExp
-  var routeRe = exports.routeRe = function routeRe(x) {
+  var routeRe = function routeRe(x) {
     return x instanceof RegExp ? new RegExp(x.source) : new RegExp('^' + regexify(x) + '$');
   };
 
   // route ::  (* -> *), String -> (String -> _)
-  var route = exports.route = function route(f, r) {
+  var route = function route(f, r) {
     var re = routeRe(r);
     return function (path) {
       var match = re.exec(path);
@@ -67,13 +67,13 @@
   };
 
   // Unsafe functions
-  var pathHandler = exports.pathHandler = {
+  var pathHandler = {
     // get :: _ -> String
     get: function get() {
       return window.location.pathname;
     },
 
-    // set :: (path, title) -> _
+    // set :: (String, String) -> _
     set: function set(path, title) {
       return window.history.pushState(undefined, title, path);
     },
@@ -116,7 +116,9 @@
     };
 
     var start = function start() {
-      path.listen(dispatch);
+      path.listen(function () {
+        return dispatch(path.get());
+      });
       dispatch(path.get());
     };
 
@@ -131,4 +133,6 @@
 
     return dispatchRoutes;
   };
+
+  exports.default = createRouter;
 });
