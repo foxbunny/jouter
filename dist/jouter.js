@@ -63,6 +63,7 @@
       var match = re.exec(path);
       if (!match) return;
       f.apply(undefined, _toConsumableArray(match.slice(1)));
+      return true;
     };
   };
 
@@ -86,6 +87,11 @@
     // decorate :: (* -> *) -> (* -> *)
     decorate: function decorate(f) {
       return f;
+    },
+
+    // onNoMatch :: (String -> _) -> _
+    onNoMatch: function onNoMatch(f) {
+      return undefined;
     }
   };
 
@@ -100,9 +106,12 @@
     };
 
     var dispatch = function dispatch(p) {
-      return routes.forEach(function (f) {
-        return f(p);
-      });
+      var hadMatch = routes.reduce(function (result, f) {
+        var match = f(p);
+        return result || match;
+      }, false);
+      if (!hadMatch) path.onNoMatch(p);
+      return hadMatch;
     };
 
     var go = function go(p, t) {
