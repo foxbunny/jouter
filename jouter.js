@@ -56,9 +56,10 @@ export const createRouter = (myPathHandler = {}) => {
   const dispatch = p => {
     const hadMatch = routes.reduce((result, f) => {
       const match = f(p)
-      return result && match
+      return result || match
     }, false) 
-    hadMatch || path.onNoMatch(p)
+    if (!hadMatch) path.onNoMatch(p)
+    return hadMatch
   }
 
   const go = (p, t) => {
@@ -77,7 +78,7 @@ export const createRouter = (myPathHandler = {}) => {
   }
 
   const dispatchRoutes = subpath =>
-   dispatch(subpath)
+    dispatch(subpath)
 
   dispatchRoutes.add = add
   dispatchRoutes.go = go

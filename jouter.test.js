@@ -95,7 +95,7 @@ describe('createRouter', () => {
   })
 
   test('unmatched route will invoke the error handler', () => {
-    const errorHandler = jest.fn();
+    const errorHandler = jest.fn()
     const router = createRouter({
       ...fakePathHandler,
       onNoMatch: errorHandler,
@@ -104,4 +104,30 @@ describe('createRouter', () => {
     router.go('/')
     expect(errorHandler).toHaveBeenCalledWith("/")
   });
+
+  test('error handler is not invoked if subroute matches', () => {
+    const errorHandler = jest.fn();
+    const router = createRouter({
+      ...fakePathHandler,
+      onNoMatch: errorHandler
+    })
+    const subrouter = createRouter(fakePathHandler)
+    router.add(subrouter, '/sub/...')
+    subrouter.add(jest.fn(), '/foo/:x')
+    router.go('/sub/foo/2')
+    expect(errorHandler).not.toHaveBeenCalled()
+  });
+
+  test('if subroute is unmatched, error handler is invoked', () => {
+    const errorHandler = jest.fn();
+    const router = createRouter({
+      ...fakePathHandler,
+      onNoMatch: errorHandler
+    })
+    const subrouter = createRouter(fakePathHandler)
+    router.add(subrouter, '/sub/...')
+    subrouter.add(jest.fn(), '/foo/:x')
+    router.go('/bogus')
+    expect(errorHandler).toHaveBeenCalledWith('/bogus')
+  })
 })
