@@ -16,10 +16,11 @@ const routeRe = x =>
 // route ::  (* -> *), String -> (String -> _)
 const route = (f, r) => {
   const re = routeRe(r)
-  return path => {
+  return (path) => {
     const match = re.exec(path)
     if (!match) return
     f(...match.slice(1))
+    return true
   }
 }
 
@@ -36,7 +37,10 @@ const pathHandler = {
   listen: f => window.onpopstate = f,
 
   // decorate :: (* -> *) -> (* -> *)
-  decorate: f => f
+  decorate: f => f,
+
+  // onNoMatch :: (String -> _) -> _
+  onNoMatch: f => undefined,
 }
 
 export const createRouter = (myPathHandler = {}) => {
@@ -49,8 +53,13 @@ export const createRouter = (myPathHandler = {}) => {
   const add = (f, r) => 
     routes.push(route(path.decorate(f), r))
 
-  const dispatch = p => 
-    routes.forEach(f => f(p))
+  const dispatch = p => {
+    const hadMatch = routes.reduce((result, f) => {
+      const match = f(p)
+      return result && match
+    }, false) 
+    hadMatch || path.onNoMatch(p)
+  }
 
   const go = (p, t) => {
     path.set(p, t)

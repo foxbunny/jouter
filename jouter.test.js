@@ -93,4 +93,15 @@ describe('createRouter', () => {
     router.go('/12')
     expect(fn).toHaveBeenCalledWith(injectedDependency, '12')
   })
+
+  test('unmatched route will invoke the error handler', () => {
+    const errorHandler = jest.fn();
+    const router = createRouter({
+      ...fakePathHandler,
+      onNoMatch: errorHandler,
+    })
+    router.add(jest.fn(), '/:x')
+    router.go('/')
+    expect(errorHandler).toHaveBeenCalledWith("/")
+  });
 })
