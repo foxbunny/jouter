@@ -156,7 +156,8 @@ var pathHandler = {
     window.history.pushState(undefined, title, path),
   },
   listen: function (f) { window.onpopstate = f },
-  decorate: function (f) { return f }
+  decorate: function (f) { return f },
+  onNoMatch: function (p) { return; }
 }
 ```
 
@@ -180,6 +181,11 @@ objects can also be used to customize the behavior of the route functions.
 * `handler.decorate(func)`: must take a function and return a function. This 
   can be used to customize route handler functions centrally (e.g., perform
   dependency injection).
+
+* `handler.onNoMatch(path)`: This function is invoked if no handler matched the
+  given path. We usually only specify this on the top-level route handler when
+  using subroutes. The only argument it receives is the path that failed to
+  match. No return value is expected.
 
 When passing a handler object to `createRouter()`, we may pass an object that
 contains a subset of the properties listed above, and thus override only the
