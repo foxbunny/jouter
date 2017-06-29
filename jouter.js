@@ -69,7 +69,8 @@ export const createRouter = (myPathHandler = {}) => {
 
   const handleEvent = e => {
     e.preventDefault()
-    go(e.target.href, e.target.title)
+    const target = e.currentTarget
+    go(target.href, target.title)
   }
 
   const start = () => {
