@@ -53,16 +53,11 @@ describe('createRouter', () => {
   test('handing events', () => {
     const router = createRouter(fakePathHandler)
     const fn = jest.fn()
-    const fakeEvent = {
-      preventDefault: jest.fn(),
-      target: {
-        href: '/baz',
-        title: 'Baz'
-      }
-    }
+    const elem = document.createElement('a')
+    elem.href = '/baz'
     router.add(fn, '/:x')
-    router.handleEvent(fakeEvent)
-    expect(fakeEvent.preventDefault).toHaveBeenCalled()
+    elem.addEventListener('click', router.handleEvent)
+    elem.dispatchEvent(new Event('click'));
     expect(fn).toHaveBeenCalledWith('baz')
     expect(currentPath).toBe('/baz')
   })
