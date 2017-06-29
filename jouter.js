@@ -68,7 +68,6 @@ export const createRouter = (myPathHandler = {}) => {
   }
 
   const handleEvent = e => {
-    console.log('called')
     e.preventDefault()
     const target = e.currentTarget
     go(target.href, target.title)
