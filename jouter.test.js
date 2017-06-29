@@ -62,6 +62,20 @@ describe('createRouter', () => {
     expect(currentPath).toBe('/baz')
   })
 
+  fit('handling events on nested objects', () => {
+    const router = createRouter(fakePathHandler)
+    const fn = jest.fn()
+    const elem = document.createElement('a')
+    elem.href = '/baz'
+    elem.innerHTML = '<span>click here</span>';
+    const nested = elem.querySelector('span');
+    router.add(fn, '/:x')
+    elem.addEventListener('click', router.handleEvent)
+    nested.dispatchEvent(new Event('click', {bubbles: true, cancelable: true}));
+    expect(fn).toHaveBeenCalledWith('baz')
+    expect(currentPath).toBe('/baz')
+  });
+
   test('router object is a function', () => {
     const router = createRouter(fakePathHandler)
     expect(router).toBeInstanceOf(Function)
