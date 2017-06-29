@@ -121,7 +121,8 @@
 
     var handleEvent = function handleEvent(e) {
       e.preventDefault();
-      go(e.target.href, e.target.title);
+      var target = e.currentTarget;
+      go(target.href, target.title);
     };
 
     var start = function start() {
