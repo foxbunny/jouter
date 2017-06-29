@@ -62,7 +62,7 @@ describe('createRouter', () => {
     expect(currentPath).toBe('/baz')
   })
 
-  fit('handling events on nested objects', () => {
+  test('handling events on nested objects', () => {
     const router = createRouter(fakePathHandler)
     const fn = jest.fn()
     const elem = document.createElement('a')
