@@ -1,4 +1,4 @@
-import {routeRe, route, createRouter} from './jouter'
+import { routeRe, route, createRouter } from './jouter'
 
 describe('createRouter', () => {
   let currentPath = '/foo'
@@ -12,6 +12,10 @@ describe('createRouter', () => {
   const fakePathHandler = {
     get: jest.fn(() => currentPath),
     set: jest.fn((path, title) => {
+      currentPath = path
+      listeners.forEach(f => f())
+    }),
+    swap: jest.fn((path, title) => {
       currentPath = path
       listeners.forEach(f => f())
     }),
@@ -30,6 +34,14 @@ describe('createRouter', () => {
     const router = createRouter(fakePathHandler)
     router.go('/test')
     expect(currentPath).toBe('/test')
+    expect(fakePathHandler.set).toHaveBeenCalledWith('/test', undefined)
+  })
+
+  test('switching paths using replace', () => {
+    const router = createRouter(fakePathHandler)
+    router.replace('/test')
+    expect(currentPath).toBe('/test')
+    expect(fakePathHandler.swap).toHaveBeenCalledWith('/test', undefined)
   })
 
   test('adding and handling routes', () => {
@@ -71,7 +83,7 @@ describe('createRouter', () => {
     const nested = elem.querySelector('span');
     router.add(fn, '/:x')
     elem.addEventListener('click', router.handleEvent)
-    nested.dispatchEvent(new Event('click', {bubbles: true, cancelable: true}));
+    nested.dispatchEvent(new Event('click', { bubbles: true, cancelable: true }));
     expect(fn).toHaveBeenCalledWith('baz')
     expect(currentPath).toBe('/baz')
   });
@@ -92,10 +104,10 @@ describe('createRouter', () => {
   })
 
   test('router object can be created with a decorator function', () => {
-    const injectedDependency = {foo: 'bar'}
+    const injectedDependency = { foo: 'bar' }
     const fn = jest.fn()
     const router = createRouter({
-      ...fakePathHandler, 
+      ...fakePathHandler,
       decorate: fn => (...args) => fn(injectedDependency, ...args)
     })
     router.add(fn, '/:x')
