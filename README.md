@@ -95,8 +95,16 @@ router.go('/some/path', 'Target path title')
 mainstream browsers. It is recommended that you specify the title anyway, as
 the specs allow for it, and it may be supported in future.
 
+You can also use the `replace()` method to swap the currently entry in location
+history with a new one. This also triggers the associated route handler.
+Arguments are the same as for the `go()` method:
+
+```javascript
+router.replace('/some/path', 'Target path title')
+```
+
 You can also rig elements to trigger routing on events using
-`router.handleEvent` function as the event handler. The target path is  derived
+`router.handleEvent` function as the event handler. The target path is derived
 from the `href` attribute of the element so this technique is suitable for
 anchor elements. Note that `preventDefault()` is always called on the event
 object, so this technique is not usable on browsers without `preventDefault()`
@@ -155,6 +163,9 @@ var pathHandler = {
   set: function (path, title) {
     window.history.pushState(undefined, title, path),
   },
+  swap: function (path, title) {
+    window.history.replaceState(undefined, title, path),
+  },
   listen: function (f) { window.onpopstate = f },
   decorate: function (f) { return f },
   onNoMatch: function (p) { return; }
@@ -174,6 +185,10 @@ objects can also be used to customize the behavior of the route functions.
 
 * `handler.set(path, title)`: must take a path, and optionally a title, and
   cause the application to switch to the specified path.
+
+* `handler.swap(path, title)`: must take a path, and optionally a title, and
+  cause the application to replace the current item in location history with the
+  specified one.
 
 * `handler.listen(func)`: must take a function that is to be invoked without 
   any arguments every time current path changes.
