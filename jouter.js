@@ -4,14 +4,14 @@ const SUBPATH_RE = /\/\.\.\./g
 
 const regexify = x =>
   x.replace(TOKEN_RE, '([^/]+)')
-   .replace(ANY_RE, '.*')
-   .replace(SUBPATH_RE, '(\/.*)')
+    .replace(ANY_RE, '.*')
+    .replace(SUBPATH_RE, '(\/.*)')
 
 // parseRoute :: String | RegExp -> RegExp
 const routeRe = x =>
   x instanceof RegExp ?
     new RegExp(x.source)
-  : new RegExp(`^${regexify(x)}$`)
+    : new RegExp(`^${regexify(x)}$`)
 
 // route ::  (* -> *), String -> (String -> _)
 const route = (f, r) => {
@@ -33,6 +33,10 @@ const pathHandler = {
   set: (path, title) =>
     window.history.pushState(undefined, title, path),
 
+  // swap :: (String, String) -> _
+  swap: (path, title) =>
+    window.history.replaceState(undefined, title, path),
+
   // listen :: (* -> *) -> _
   listen: f => window.onpopstate = f,
 
@@ -50,20 +54,25 @@ export const createRouter = (myPathHandler = {}) => {
     ...myPathHandler
   }
 
-  const add = (f, r) => 
+  const add = (f, r) =>
     routes.push(route(path.decorate(f), r))
 
   const dispatch = p => {
     const hadMatch = routes.reduce((result, f) => {
       const match = f(p)
       return result || match
-    }, false) 
+    }, false)
     if (!hadMatch) path.onNoMatch(p)
     return hadMatch
   }
 
   const go = (p, t) => {
     path.set(p, t)
+    dispatch(path.get())
+  }
+
+  const replace = (p, t) => {
+    path.swap(p, t)
     dispatch(path.get())
   }
 
@@ -83,6 +92,7 @@ export const createRouter = (myPathHandler = {}) => {
 
   dispatchRoutes.add = add
   dispatchRoutes.go = go
+  dispatchRoutes.replace = replace
   dispatchRoutes.handleEvent = handleEvent
   dispatchRoutes.start = start
 

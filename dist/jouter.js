@@ -79,6 +79,11 @@
       return window.history.pushState(undefined, title, path);
     },
 
+    // swap :: (String, String) -> _
+    swap: function swap(path, title) {
+      return window.history.replaceState(undefined, title, path);
+    },
+
     // listen :: (* -> *) -> _
     listen: function listen(f) {
       return window.onpopstate = f;
@@ -119,6 +124,11 @@
       dispatch(path.get());
     };
 
+    var replace = function replace(p, t) {
+      path.swap(p, t);
+      dispatch(path.get());
+    };
+
     var handleEvent = function handleEvent(e) {
       e.preventDefault();
       var target = e.currentTarget;
@@ -138,6 +148,7 @@
 
     dispatchRoutes.add = add;
     dispatchRoutes.go = go;
+    dispatchRoutes.replace = replace;
     dispatchRoutes.handleEvent = handleEvent;
     dispatchRoutes.start = start;
 
